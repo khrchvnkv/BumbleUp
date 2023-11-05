@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -7,5 +8,6 @@ namespace Common.Infrastructure.Services.Coroutines
     {
         Coroutine StartCoroutine(IEnumerator coroutine);
         void StopCoroutineSafe(Coroutine coroutine);
+        void ExecuteInNextFrame(Action action);
     }
 }

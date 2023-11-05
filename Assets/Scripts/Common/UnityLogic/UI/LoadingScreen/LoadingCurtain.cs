@@ -1,14 +1,11 @@
-using System.Collections;
-using Common.Infrastructure.Services.Coroutines;
 using DG.Tweening;
 using UnityEngine;
-using Zenject;
 
 namespace Common.UnityLogic.UI.LoadingScreen
 {
     public class LoadingCurtain : MonoBehaviour
     {
-        private const float FADE_DURATION = 1.5f;
+        private const float FADE_DURATION = 0.6f;
 
         [SerializeField] private CanvasGroup _canvasGroup;
         

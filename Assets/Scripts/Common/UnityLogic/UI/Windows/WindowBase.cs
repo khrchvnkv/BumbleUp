@@ -6,6 +6,8 @@ namespace Common.UnityLogic.UI.Windows
     public abstract class WindowBase<TData> : MonoBehaviour, IWindow where TData : IWindowData
     {
         protected TData WindowData;
+        
+        public GameObject GameObject => gameObject;
 
         public void Show(IWindowData windowData)
         {
@@ -15,6 +17,7 @@ namespace Common.UnityLogic.UI.Windows
         }
         public void Hide()
         {
+            PrepareForHiding();
             if (WindowData.DestroyOnClosing)
             {
                 Destroy(gameObject);
@@ -27,5 +30,6 @@ namespace Common.UnityLogic.UI.Windows
             WindowData = default;
         }
         protected virtual void PrepareForShowing() { }
+        protected virtual void PrepareForHiding() { }
     }
 }

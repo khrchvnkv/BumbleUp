@@ -1,11 +1,11 @@
+using System;
 using System.Collections.Generic;
 using Common.Infrastructure.Factories.Zenject;
 using Common.Infrastructure.Services.AssetsManagement;
-using Common.Infrastructure.Services.DontDestroyOnLoadCreator;
 using Common.Infrastructure.Services.StaticData;
 using Common.Infrastructure.WindowsManagement;
 using Common.UnityLogic.UI.Windows;
-using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Common.Infrastructure.Factories.UIFactory
 {
@@ -15,21 +15,18 @@ namespace Common.Infrastructure.Factories.UIFactory
 
         private readonly IAssetProvider _assetProvider;
         private readonly IStaticDataService _staticDataService;
-        private readonly IDontDestroyOnLoadCreator _dontDestroyOnLoadCreator;
         private readonly IZenjectFactory _zenjectFactory;
 
-        private readonly Dictionary<string, GameObject> _createdObjects;
+        private readonly Dictionary<Type, WindowInfo> _createdObjects;
 
         private UIRoot _uiRoot;
 
-        public UIFactory(IAssetProvider assetProvider, IStaticDataService staticDataService, 
-            IDontDestroyOnLoadCreator dontDestroyOnLoadCreator, IZenjectFactory zenjectFactory)
+        public UIFactory(IAssetProvider assetProvider, IStaticDataService staticDataService, IZenjectFactory zenjectFactory)
         {
             _assetProvider = assetProvider;
             _staticDataService = staticDataService;
-            _dontDestroyOnLoadCreator = dontDestroyOnLoadCreator;
             _zenjectFactory = zenjectFactory;
-            _createdObjects = new Dictionary<string, GameObject>();
+            _createdObjects = new();
         }
         public void CreateUIRoot()
         {
@@ -48,24 +45,29 @@ namespace Common.Infrastructure.Factories.UIFactory
             _uiRoot.LoadingCurtain.Show();
         }
         public void HideLoadingCurtain() => _uiRoot.LoadingCurtain.Hide();
-        public void ShowWindow<TData>(TData data) where TData : struct, IWindowData
+        public void Show<TData>(TData data) where TData : struct, IWindowData
         {
-            if (!_createdObjects.TryGetValue(data.WindowName, out var window))
+            var dataType = typeof(TData);
+            if (!_createdObjects.TryGetValue(dataType, out var windowInfo))
             {
                 var path = string.Format(UI_PATH, data.WindowName);
                 var windowPrefab = _assetProvider.Load(path);
-                window = _zenjectFactory.Instantiate(windowPrefab, _uiRoot.WindowsParent);
-                _createdObjects.Add(data.WindowName, window);
+                var windowInstance = _zenjectFactory.Instantiate(windowPrefab, _uiRoot.WindowsParent);
+                var window = windowInstance.GetComponent<IWindow>();
+                windowInfo = new WindowInfo(window, data);
+                _createdObjects.Add(dataType, windowInfo);
             }
-            
-            window.GetComponent<IWindow>().Show(data);
+
+            windowInfo.Window.Show(data);
         }
-        public void Hide<TData>(TData data) where TData : struct, IWindowData
+
+        public void Hide<TData>() where TData : struct, IWindowData
         {
-            if (_createdObjects.TryGetValue(data.WindowName, out var window))
+            var windowType = typeof(TData);
+            if (_createdObjects.TryGetValue(windowType, out var windowInfo))
             {
-                if (data.DestroyOnClosing) _createdObjects.Remove(data.WindowName);
-                window.GetComponent<IWindow>().Hide();
+                if (windowInfo.WindowData.DestroyOnClosing) _createdObjects.Remove(windowType);
+                windowInfo.Window.Hide();
             }
         }
     }
