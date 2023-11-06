@@ -3,6 +3,7 @@ using Common.Infrastructure.Factories.UIFactory;
 using Common.Infrastructure.Services.Coroutines;
 using Common.Infrastructure.Services.Input;
 using Common.Infrastructure.Services.SceneContext;
+using Common.Infrastructure.Services.Score;
 using Common.Infrastructure.Services.StaticData;
 using Common.StaticData;
 using Common.UnityLogic.UI.Windows.Loss;
@@ -17,7 +18,6 @@ namespace Common.UnityLogic.Ball
     {
         [Header("Components")]
         [SerializeField] private Rigidbody _rigidbody;
-        [SerializeField] private TrailRenderer _trailRenderer;
         [SerializeField] private LayerMask _groundLayer;
 
         [Header("Curves")]
@@ -29,6 +29,7 @@ namespace Common.UnityLogic.Ball
         private ICoroutineRunner _coroutineRunner;
         private IUIFactory _uiFactory;
         private BallStaticData _ballStaticData;
+        private IScoreService _scoreService;
 
         private Coroutine _sideJumpCoroutine;
         private Coroutine _forwardJumpCoroutine;
@@ -37,13 +38,15 @@ namespace Common.UnityLogic.Ball
 
         [Inject]
         private void Construct(ISceneContextService sceneContextService, IInputService inputService, 
-            ICoroutineRunner coroutineRunner, IUIFactory uiFactory, IStaticDataService staticDataService)
+            ICoroutineRunner coroutineRunner, IUIFactory uiFactory, 
+            IStaticDataService staticDataService, IScoreService scoreService)
         {
             _sceneContextService = sceneContextService;
             _inputService = inputService;
             _coroutineRunner = coroutineRunner;
             _uiFactory = uiFactory;
             _ballStaticData = staticDataService.GameStaticData.BallStaticData;
+            _scoreService = scoreService;
         }
         public void ResetBall()
         {
@@ -52,11 +55,7 @@ namespace Common.UnityLogic.Ball
             _sideJumpCoroutine = null;
             _forwardJumpCoroutine = null;
         }
-        private void OnValidate()
-        {
-            _rigidbody ??= gameObject.GetComponent<Rigidbody>();
-            _trailRenderer ??= gameObject.GetComponent<TrailRenderer>();
-        }
+        private void OnValidate() => _rigidbody ??= gameObject.GetComponent<Rigidbody>();
         private void OnEnable()
         {
             _inputService.OnTouch += Jump;
@@ -84,6 +83,7 @@ namespace Common.UnityLogic.Ball
                     var nextPoint = _sceneContextService.Stairs.NextStepBallPivot.position;
                     _sceneContextService.Stairs.UpdateStairs();
                     _sceneContextService.Camera.SetNewTarget(nextPoint);
+                    _scoreService.AddScorePoint();
                 }
 
                 _forwardJumpCoroutine = _coroutineRunner.StartCoroutine(ForwardJumpCoroutine());
@@ -109,6 +109,7 @@ namespace Common.UnityLogic.Ball
             _rigidbody.MovePosition(newPosition);
             _sceneContextService.Stairs.UpdateStairs();
             _sceneContextService.Camera.SetNewTarget(nextPoint);
+            _scoreService.AddScorePoint();
             _forwardJumpCoroutine = null;
         }
         private IEnumerator SideJumpCoroutine(Vector3 movementDirection)
@@ -136,8 +137,7 @@ namespace Common.UnityLogic.Ball
         }
         private IEnumerator FallCoroutineAndShowLossWindow()
         {
-            _inputService.DeactivateInput();
-            
+            FailAction();
             float t = 0.0f;
             var startPosition = _rigidbody.position;
             var endPosition = startPosition + Vector3.down * Physics.gravity.magnitude;
@@ -149,6 +149,11 @@ namespace Common.UnityLogic.Ball
             }
             
             _uiFactory.Show(new LossWindowData());
+        }
+        private void FailAction()
+        {
+            _inputService.DeactivateInput();
+            _sceneContextService.Stairs.ObstacleSpawner.Deactivate();
         }
         private bool IsGrounded() =>
             Physics.RaycastAll(_rigidbody.position, Vector3.down, 1.0f, _groundLayer).Length > 0;

@@ -29,8 +29,7 @@ namespace Common.UnityLogic.SceneContext
             _sceneContextService.Camera = _camera;
             _sceneContextService.Stairs = _stairs;
             
-            _sceneContextService.BallMovement.ResetBall();
-            _stairs.RebuildSteps();
+            _sceneContextService.ResetScene();
         }
     }
 }

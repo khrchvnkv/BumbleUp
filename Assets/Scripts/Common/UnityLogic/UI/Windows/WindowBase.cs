@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Common.UnityLogic.UI.Windows
 {
-    public abstract class WindowBase<TData> : MonoBehaviour, IWindow where TData : IWindowData
+    public abstract class WindowBase<TData> : MonoBehaviour, IWindow where TData : struct, IWindowData
     {
         protected TData WindowData;
         

@@ -12,4 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49ec03c60149466aaea3ae94d5e365fa, type: 3}
   m_Name: GameStaticData
   m_EditorClassIdentifier: 
+  <BallStaticData>k__BackingField: {fileID: 11400000, guid: 9c71b73b7b5bd4794b0dd091b503e947, type: 2}
+  <ObstacleStaticData>k__BackingField: {fileID: 11400000, guid: 2fd6f86a7e1a344299e9b5fd55440d91, type: 2}
   <WindowStaticData>k__BackingField: {fileID: 11400000, guid: b8e492c30eec74b47bb2b1dd57bad5dd, type: 2}

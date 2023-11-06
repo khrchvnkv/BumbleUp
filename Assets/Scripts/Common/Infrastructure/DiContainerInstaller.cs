@@ -10,6 +10,7 @@ using Common.Infrastructure.Services.Progress;
 using Common.Infrastructure.Services.SaveLoad;
 using Common.Infrastructure.Services.SceneContext;
 using Common.Infrastructure.Services.SceneLoading;
+using Common.Infrastructure.Services.Score;
 using Common.Infrastructure.Services.StaticData;
 using Common.Infrastructure.StateMachine;
 using Common.Infrastructure.StateMachine.States;
@@ -45,6 +46,7 @@ namespace Common.Infrastructure
             Container.Bind<IPersistentProgressService>().To<PersistentProgressService>().FromNew().AsSingle();
             Container.Bind<ISceneLoader>().To<SceneLoader>().FromNew().AsSingle();
             Container.Bind<ISceneContextService>().To<SceneContextService>().FromNew().AsSingle();
+            Container.Bind<IScoreService>().To<ScoreService>().FromNew().AsSingle();
             
 #if UNITY_EDITOR
             Container.Bind<IInputService>().To<StandaloneInputService>().FromNew().AsSingle();

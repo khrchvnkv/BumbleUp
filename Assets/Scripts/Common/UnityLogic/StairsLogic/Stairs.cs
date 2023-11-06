@@ -13,10 +13,12 @@ namespace Common.UnityLogic.StairsLogic
         [SerializeField, Min(1)] private int _stepsCount;
         [SerializeField] private Transform _startStepsSpawnPoint;
         [SerializeField] private Vector3 _offsetSpawnVector;
+        
+        [field: SerializeField] public ObstacleSpawner ObstacleSpawner { get; private set; }
 
         private List<Step> _allSteps = new();
 
-        public Transform CurrentStepBallPivot => _allSteps[CurrentStepIndex].BallPivot;
+        public Step LastStep => _allSteps.LastOrDefault();
         public Transform NextStepBallPivot => _allSteps[CurrentStepIndex + 1].BallPivot;
 
         public void RebuildSteps()
@@ -42,5 +44,7 @@ namespace Common.UnityLogic.StairsLogic
             firstStep.transform.position = lastStep.NextPivot.position;
             _allSteps.Add(firstStep);
         }
+        public List<Vector3> GetRandomObstaclePathPoints() => 
+            _allSteps.Select(x => x.GetRandomObstacleSpawnPoint().position).Reverse().ToList();
     }
 }
