@@ -16,3 +16,4 @@ MonoBehaviour:
   <HorizontalOffset>k__BackingField: 1
   <JumpDuration>k__BackingField: 0.2
   <FallingSpeed>k__BackingField: 4
+  <DurationAfterCollision>k__BackingField: 1.75

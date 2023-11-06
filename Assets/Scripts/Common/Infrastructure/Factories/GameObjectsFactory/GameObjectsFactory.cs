@@ -27,11 +27,11 @@ namespace Common.Infrastructure.Factories.GameObjectsFactory
             _zenjectFactory = zenjectFactory;
             _diContainer = diContainer;
         }
-        public BallMovement CreateBall()
+        public BallComponent CreateBall()
         {
             var prefab = GetPrefab(BallPath);
             var instance = _zenjectFactory.Instantiate(prefab);
-            var ballMovement = instance.GetComponent<BallMovement>();
+            var ballMovement = instance.GetComponent<BallComponent>();
             
             return ballMovement;
         }

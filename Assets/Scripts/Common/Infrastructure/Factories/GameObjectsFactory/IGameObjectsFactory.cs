@@ -6,7 +6,7 @@ namespace Common.Infrastructure.Factories.GameObjectsFactory
 {
     public interface IGameObjectsFactory
     {
-        BallMovement CreateBall();
+        BallComponent CreateBall();
         ObstacleMovement SpawnObstacle(Vector3 position);
         void DespawnObstacle(ObstacleMovement obstacleMovement);
         void DespawnAllObstacles();

@@ -7,7 +7,7 @@ namespace Common.Infrastructure.Services.Input
     public class MobileInputService : IInputService, IDisposable
     {
         private const int InputButtonIndex = 0;
-        private const float SwipeThresholdScreenPercent = 0.3f;
+        private const float SwipeThresholdScreenPercent = 0.15f;
         
         public event Action OnTouch;
         public event Action OnLeftSwipe;

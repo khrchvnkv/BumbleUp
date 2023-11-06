@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Common.Infrastructure.Factories.UIFactory;
 using Common.Infrastructure.Services.Coroutines;
@@ -7,6 +8,7 @@ using Common.Infrastructure.Services.Score;
 using Common.Infrastructure.Services.StaticData;
 using Common.StaticData;
 using Common.UnityLogic.UI.Windows.Loss;
+using Common.UnityLogic.UI.Windows.TapToStart;
 using NaughtyAttributes;
 using UnityEngine;
 using Zenject;
@@ -16,6 +18,9 @@ namespace Common.UnityLogic.Ball
     [RequireComponent(typeof(Rigidbody))]
     public class BallMovement : MonoBehaviour
     {
+        public event Action BallFallingStarted;
+        public event Action BallFallingCompleted;
+        
         [Header("Components")]
         [SerializeField] private Rigidbody _rigidbody;
         [SerializeField] private LayerMask _groundLayer;
@@ -27,7 +32,6 @@ namespace Common.UnityLogic.Ball
         private ISceneContextService _sceneContextService;
         private IInputService _inputService;
         private ICoroutineRunner _coroutineRunner;
-        private IUIFactory _uiFactory;
         private BallStaticData _ballStaticData;
         private IScoreService _scoreService;
 
@@ -38,17 +42,15 @@ namespace Common.UnityLogic.Ball
 
         [Inject]
         private void Construct(ISceneContextService sceneContextService, IInputService inputService, 
-            ICoroutineRunner coroutineRunner, IUIFactory uiFactory, 
-            IStaticDataService staticDataService, IScoreService scoreService)
+            ICoroutineRunner coroutineRunner, IStaticDataService staticDataService, IScoreService scoreService)
         {
             _sceneContextService = sceneContextService;
             _inputService = inputService;
             _coroutineRunner = coroutineRunner;
-            _uiFactory = uiFactory;
             _ballStaticData = staticDataService.GameStaticData.BallStaticData;
             _scoreService = scoreService;
         }
-        public void ResetBall()
+        public void ResetMovement()
         {
             _rigidbody.position = Vector3.zero;
             _sceneContextService.Camera.MoveToTarget(_rigidbody.position);
@@ -129,15 +131,16 @@ namespace Common.UnityLogic.Ball
                 t += LerpSpeed *  Time.deltaTime;
                 t = Mathf.Clamp01(t);
                 var lerpHorizontalPosition = Vector3.Lerp(oldHorizontal, newHorizontal, t);
-                var height = new Vector3(0, jumpMultiplier * jumpCurve.Evaluate(t), 0);
-                _rigidbody.MovePosition(lerpHorizontalPosition + height);
+                var verticalMovement = new Vector3(0, jumpMultiplier * jumpCurve.Evaluate(t), 0);
+                _rigidbody.MovePosition(lerpHorizontalPosition + verticalMovement);
                 
                 yield return null;
             }
         }
         private IEnumerator FallCoroutineAndShowLossWindow()
         {
-            FailAction();
+            BallFallingStarted?.Invoke();
+            
             float t = 0.0f;
             var startPosition = _rigidbody.position;
             var endPosition = startPosition + Vector3.down * Physics.gravity.magnitude;
@@ -148,12 +151,7 @@ namespace Common.UnityLogic.Ball
                 yield return null;
             }
             
-            _uiFactory.Show(new LossWindowData());
-        }
-        private void FailAction()
-        {
-            _inputService.DeactivateInput();
-            _sceneContextService.Stairs.ObstacleSpawner.Deactivate();
+            BallFallingCompleted?.Invoke();
         }
         private bool IsGrounded() =>
             Physics.RaycastAll(_rigidbody.position, Vector3.down, 1.0f, _groundLayer).Length > 0;

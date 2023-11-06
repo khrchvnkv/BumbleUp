@@ -10,7 +10,7 @@ namespace Common.Infrastructure.Services.SceneContext
 {
     public sealed class SceneContextService : ISceneContextService
     {
-        public BallMovement BallMovement { get; set; }
+        public BallComponent Ball { get; set; }
         public Stairs Stairs { get; set; }
         public CameraFollowing Camera { get; set; }
 
@@ -29,7 +29,7 @@ namespace Common.Infrastructure.Services.SceneContext
         {
             _coroutineRunner.StopAllCoroutines();
             _scoreService.ResetScoreCalculating();
-            BallMovement.ResetBall();
+            Ball.ResetBall();
             Stairs.RebuildSteps();
             _gameObjectsFactory.DespawnAllObstacles();
         }

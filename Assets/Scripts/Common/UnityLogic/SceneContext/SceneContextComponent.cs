@@ -25,7 +25,7 @@ namespace Common.UnityLogic.SceneContext
         }
         private void InitSceneContext()
         {
-            _sceneContextService.BallMovement = _gameObjectsFactory.CreateBall();
+            _sceneContextService.Ball = _gameObjectsFactory.CreateBall();
             _sceneContextService.Camera = _camera;
             _sceneContextService.Stairs = _stairs;
             

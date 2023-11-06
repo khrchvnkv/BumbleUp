@@ -9,5 +9,9 @@ namespace Common.StaticData
         [field:SerializeField] public float HorizontalOffset { get; private set; }
         [field:SerializeField] public float JumpDuration { get; private set; }
         [field:SerializeField] public float FallingSpeed { get; private set; }
+        
+        
+        [field:Space, Header("Animations Duration")]
+        [field: SerializeField] public float DurationAfterCollision { get; private set; }
     }
 }

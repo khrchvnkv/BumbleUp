@@ -6,18 +6,18 @@ namespace Common.Infrastructure.Services.Score
     {
         public event Action<uint> OnScoreChanged;
         
-        private uint _score;
+        public uint Score { get; private set; }
 
         public void ResetScoreCalculating()
         {
-            _score = 0;
+            Score = 0;
             ScoreUpdated();
         }
         public void AddScorePoint()
         {
-            _score++;
+            Score++;
             ScoreUpdated();
         }
-        private void ScoreUpdated() => OnScoreChanged?.Invoke(_score);
+        private void ScoreUpdated() => OnScoreChanged?.Invoke(Score);
     }
 }
