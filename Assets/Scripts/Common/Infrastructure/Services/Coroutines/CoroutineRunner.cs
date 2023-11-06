@@ -8,7 +8,7 @@ namespace Common.Infrastructure.Services.Coroutines
     {
         public void StopCoroutineSafe(Coroutine coroutine)
         {
-            if (coroutine is not null) StopCoroutine(coroutine);
+            if (coroutine != null) StopCoroutine(coroutine);
         }
         public void ExecuteInNextFrame(Action action)
         {

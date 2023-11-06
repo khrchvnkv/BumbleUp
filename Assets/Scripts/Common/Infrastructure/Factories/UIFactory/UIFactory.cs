@@ -26,11 +26,11 @@ namespace Common.Infrastructure.Factories.UIFactory
             _assetProvider = assetProvider;
             _staticDataService = staticDataService;
             _zenjectFactory = zenjectFactory;
-            _createdObjects = new();
+            _createdObjects = new Dictionary<Type, WindowInfo>();
         }
         public void CreateUIRoot()
         {
-            if (_uiRoot is not null) Object.Destroy(_uiRoot.gameObject);
+            if (_uiRoot != null) Object.Destroy(_uiRoot.gameObject);
 
             var prefab = _staticDataService.GameStaticData.WindowStaticData.UIRoot;
             _uiRoot = _zenjectFactory.Instantiate(prefab);

@@ -16,7 +16,7 @@ namespace Common.UnityLogic.StairsLogic
         
         [field: SerializeField] public ObstacleSpawner ObstacleSpawner { get; private set; }
 
-        private List<Step> _allSteps = new();
+        private List<Step> _allSteps = new List<Step>();
 
         public Step LastStep => _allSteps.LastOrDefault();
         public Transform NextStepBallPivot => _allSteps[CurrentStepIndex + 1].BallPivot;

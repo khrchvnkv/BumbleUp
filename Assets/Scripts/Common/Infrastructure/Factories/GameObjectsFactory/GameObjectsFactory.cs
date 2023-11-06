@@ -18,8 +18,8 @@ namespace Common.Infrastructure.Factories.GameObjectsFactory
         private readonly IZenjectFactory _zenjectFactory;
         private readonly DiContainer _diContainer;
 
-        private readonly Dictionary<string, GameObject> _loadedPrefabs = new();
-        private readonly List<ObstacleMovement> _createdObstacles = new();
+        private readonly Dictionary<string, GameObject> _loadedPrefabs = new Dictionary<string, GameObject>();
+        private readonly List<ObstacleMovement> _createdObstacles = new List<ObstacleMovement>();
 
         public GameObjectsFactory(IAssetProvider assetProvider, IZenjectFactory zenjectFactory, DiContainer diContainer)
         {
